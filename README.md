@@ -1,2 +1,1 @@
-# luhn-utils
-Utilities to work with luhn check
+# Luhn Utils
