@@ -28,20 +28,16 @@ public class LuhnUtils
     public static int luhnChecksum(int... ints)
     {
         return IntStream.range(0, ints.length)
-                .map(i -> luhn(i, ints))
+                .map(i -> ints.length - i - 1) // reverse the order of iteration
+                .map(ri -> {
+                    int o = ints[ints.length - ri -1];
+                    if (ri % 2 != 0) {
+                        o += o;
+                        o = o > 9 ? o - 9 : o;
+                    }
+                    return o;
+                })
                 .sum() % 10;
-    }
-
-    protected static int luhn(int i, int[] numbers) {
-        int o;
-        int ri = numbers.length - i - 1;
-        if (ri % 2 == 0) {
-            o = numbers[numbers.length - ri -1];
-        } else {
-            o = numbers[numbers.length - ri -1] * 2;
-            o = o > 9 ? o - 9 : o;
-        }
-        return o;
     }
 
     /**
