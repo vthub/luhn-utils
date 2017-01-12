@@ -20,6 +20,23 @@ public class LuhnUtilsTest
         assertThat(luhnChecksum(stringToInts("6706386224805934")), is(0));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testLuhnChecksum_InvalidInput() throws Exception
+    {
+        luhnChecksum(0, 1, 2, 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLuhnChecksum_NullSafety() throws Exception
+    {
+        luhnChecksum();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testLuhnChecksum_NullInput() throws Exception {
+        luhnChecksum(null);
+    }
+
     @Test
     public void testLuhnCheckDigit() throws Exception
     {
