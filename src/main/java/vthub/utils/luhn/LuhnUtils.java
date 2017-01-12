@@ -6,6 +6,9 @@ package vthub.utils.luhn;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class LuhnUtils
@@ -22,16 +25,20 @@ public class LuhnUtils
      */
     public static int luhnChecksum(int... ints)
     {
-        int oddSum = IntStream.range(0, ints.length)
-                .filter(i -> i % 2 != 0)
+        Map<Boolean, List<Integer>> evenAndOdd = IntStream.range(0, ints.length)
+                .mapToObj(Integer::valueOf)
+                .collect(Collectors.partitioningBy(i -> i % 2 == 0));
+
+        int evenSum = evenAndOdd.get(true).stream()
                 .map(i -> ints[ints.length - i - 1])
-                .map(i -> i * 2)
-                .map(i -> i > 9 ? i - 9 : i)
+                .mapToInt(Integer::intValue)
                 .sum();
-        int evenSum = IntStream.range(0, ints.length)
-                .filter(i -> i % 2 == 0)
-                .map(i -> ints[ints.length - i - 1])
-                .sum();
+        int oddSum = evenAndOdd.get(false).stream().map(i -> ints[ints.length - i - 1])
+            .map(i -> i * 2)
+            .map(i -> i > 9 ? i - 9 : i)
+            .mapToInt(Integer::intValue)
+            .sum();
+
         return (oddSum + evenSum) % 10;
     }
 
