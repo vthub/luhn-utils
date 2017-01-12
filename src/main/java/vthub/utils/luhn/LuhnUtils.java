@@ -6,8 +6,10 @@ package vthub.utils.luhn;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -25,21 +27,21 @@ public class LuhnUtils
      */
     public static int luhnChecksum(int... ints)
     {
-        Map<Boolean, List<Integer>> evenAndOdd = IntStream.range(0, ints.length)
-                .mapToObj(Integer::valueOf)
-                .collect(Collectors.partitioningBy(i -> i % 2 == 0));
+        return IntStream.range(0, ints.length)
+                .map(i -> luhn(i, ints))
+                .sum() % 10;
+    }
 
-        int evenSum = evenAndOdd.get(true).stream()
-                .map(i -> ints[ints.length - i - 1])
-                .mapToInt(Integer::intValue)
-                .sum();
-        int oddSum = evenAndOdd.get(false).stream().map(i -> ints[ints.length - i - 1])
-            .map(i -> i * 2)
-            .map(i -> i > 9 ? i - 9 : i)
-            .mapToInt(Integer::intValue)
-            .sum();
-
-        return (oddSum + evenSum) % 10;
+    protected static int luhn(int i, int[] numbers) {
+        int o;
+        int ri = numbers.length - i - 1;
+        if (ri % 2 == 0) {
+            o = numbers[numbers.length - ri -1];
+        } else {
+            o = numbers[numbers.length - ri -1] * 2;
+            o = o > 9 ? o - 9 : o;
+        }
+        return o;
     }
 
     /**
