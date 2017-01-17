@@ -6,8 +6,8 @@ package vthub.utils.luhn;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.function.IntPredicate;
+import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
 
 public class LuhnUtils
@@ -36,26 +36,34 @@ public class LuhnUtils
     {
         validateForLuhnCheck(ints);
         return IntStream.range(0, ints.length)
-                .map(i -> ints.length - i - 1) // reverse the order of iteration
-                .map(ri -> {
-                    int o = ints[ints.length - ri -1];
-                    if (ri % 2 != 0) {
-                        o += o;
-                        o = o > 9 ? o - 9 : o;
-                    }
-                    return o;
-                })
+                .map(condition(i -> i % 2 == 0 && ints.length % 2 == 0, i -> ints[i]*2, i -> ints[i]))
+                .map(condition(v -> v > 9, v -> v - 9))
                 .sum() % 10;
     }
 
-    protected static void validateForLuhnCheck(int... ints) {
-        IntStream checkStream = Optional.ofNullable(ints)
-                .map(Arrays::stream)
-                .orElseThrow(() -> new NullPointerException("Input array for Luhn check cannot be null"));
+    /**
+     * Executes specific function depending on the results of predicate evaluation
+     * @param ifTrue predicate to be tested
+     * @param thenDo function to be executed if predicate is evaluated to <code>true</code>
+     * @param elseDo function to be executed if predicate is evaluated to <code>false</code>
+     * @return result of either <code>thenDo</code> or <code>elseDo</code> function
+     */
+    static IntUnaryOperator condition(IntPredicate ifTrue, IntUnaryOperator thenDo, IntUnaryOperator elseDo) {
+        return t -> ifTrue.test(t) ? thenDo.applyAsInt(t) : elseDo.applyAsInt(t);
+    }
+
+    static IntUnaryOperator condition(IntPredicate ifTrue, IntUnaryOperator thenDo) {
+        return condition(ifTrue, thenDo, a -> a);
+    }
+
+    static void validateForLuhnCheck(int... ints) {
+        if(ints == null) {
+            throw new NullPointerException("Input array for Luhn check cannot be null");
+        }
         if(ints.length == 0) {
             throw new IllegalArgumentException("Input array for Luhn check cannot be empty");
         }
-        if(checkStream.anyMatch(i -> i > 9 || i < 0)) {
+        if(IntStream.of(ints).anyMatch(i -> i > 9 || i < 0)) {
             throw new IllegalArgumentException("Input numbers for Luhn check should be in a range [0,9]");
         }
     }

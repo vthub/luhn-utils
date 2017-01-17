@@ -5,10 +5,8 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static vthub.utils.luhn.LuhnUtils.isLuhnChecksumValid;
-import static vthub.utils.luhn.LuhnUtils.luhnCheckDigit;
-import static vthub.utils.luhn.LuhnUtils.luhnChecksum;
+import static org.junit.Assert.assertThat;
+import static vthub.utils.luhn.LuhnUtils.*;
 
 public class LuhnUtilsTest
 {
@@ -62,5 +60,4 @@ public class LuhnUtilsTest
                 .map(c -> Integer.valueOf(Character.toString((char) c)))
                 .toArray();
     }
-
 }
