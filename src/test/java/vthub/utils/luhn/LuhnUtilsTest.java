@@ -6,11 +6,21 @@ import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
+import static vthub.utils.luhn.LuhnUtils.isLuhnChecksumValid;
 import static vthub.utils.luhn.LuhnUtils.luhnCheckDigit;
 import static vthub.utils.luhn.LuhnUtils.luhnChecksum;
 
 public class LuhnUtilsTest
 {
+
+    @Test
+    public void testIsLuhnChecksumValid() throws Exception
+    {
+        assertThat(isLuhnChecksumValid(stringToInts("4534987582177718")), is(true));
+        assertThat(isLuhnChecksumValid(stringToInts("6011481272108982")), is(true));
+        assertThat(isLuhnChecksumValid(stringToInts("6706386224805934")), is(true));
+        assertThat(isLuhnChecksumValid(stringToInts("6706386224805935")), is(false));
+    }
 
     @Test
     public void testLuhnChecksum() throws Exception

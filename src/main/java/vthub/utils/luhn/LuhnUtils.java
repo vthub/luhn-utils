@@ -7,11 +7,7 @@ package vthub.utils.luhn;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.IntUnaryOperator;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class LuhnUtils
@@ -19,6 +15,16 @@ public class LuhnUtils
 
     private LuhnUtils()
     {
+    }
+
+    /**
+     * Verifies that luhn checksum is valid for a given sequence
+     * @param ints sequence of numbers in a range 0-9
+     * @return true if checksum valid, false otherwise
+     */
+    public static boolean isLuhnChecksumValid(int... ints)
+    {
+        return luhnChecksum(ints) == 0;
     }
 
     /**
