@@ -21,11 +21,19 @@ public class LuhnUtilsTest
     }
 
     @Test
-    public void testLuhnChecksum() throws Exception
+    public void testLuhnChecksum_IntArrayInput() throws Exception
     {
         assertThat(luhnChecksum(stringToInts("4534987582177718")), is(0));
         assertThat(luhnChecksum(stringToInts("6011481272108982")), is(0));
         assertThat(luhnChecksum(stringToInts("6706386224805934")), is(0));
+    }
+
+    @Test
+    public void testLuhnChecksum_StringInput() throws Exception
+    {
+        assertThat(luhnChecksum("4534987582177718"), is(0));
+        assertThat(luhnChecksum("6011481272108982"), is(0));
+        assertThat(luhnChecksum("6706386224805934"), is(0));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -42,7 +50,7 @@ public class LuhnUtilsTest
 
     @Test(expected = NullPointerException.class)
     public void testLuhnChecksum_NullInput() throws Exception {
-        luhnChecksum(null);
+        luhnChecksum((int[])null);
     }
 
     @Test

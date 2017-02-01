@@ -6,6 +6,7 @@ package vthub.utils.luhn;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import java.util.Optional;
 import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
@@ -35,8 +36,19 @@ public class LuhnUtils
     public static int luhnChecksum(int... ints)
     {
         validateForLuhnCheck(ints);
-        return IntStream.range(0, ints.length)
-                .map(condition(i -> i % 2 == 0 && ints.length % 2 == 0, i -> ints[i]*2, i -> ints[i]))
+        return luhnChecksum(i -> ints[i], ints.length);
+    }
+
+    public static int luhnChecksum(String number)
+    {
+        validateForLuhnCheck(number);
+        return luhnChecksum(i -> number.charAt(i) - '0', number.length());
+    }
+
+    protected static int luhnChecksum(IntUnaryOperator provider, int length)
+    {
+        return IntStream.range(0, length)
+                .map(condition(i -> i % 2 == 0 && length % 2 == 0, i -> provider.applyAsInt(i)*2, provider::applyAsInt))
                 .map(condition(v -> v > 9, v -> v - 9))
                 .sum() % 10;
     }
@@ -64,6 +76,18 @@ public class LuhnUtils
             throw new IllegalArgumentException("Input array for Luhn check cannot be empty");
         }
         if(IntStream.of(ints).anyMatch(i -> i > 9 || i < 0)) {
+            throw new IllegalArgumentException("Input numbers for Luhn check should be in a range [0,9]");
+        }
+    }
+
+    protected static void validateForLuhnCheck(String number) {
+        IntStream checkStream = Optional.ofNullable(number)
+                .map(String::chars)
+                .orElseThrow(() -> new NullPointerException("Input string for Luhn check cannot be null"));
+        if(number.length() == 0) {
+            throw new IllegalArgumentException("Input string for Luhn check cannot be empty");
+        }
+        if(checkStream.anyMatch(i -> i > '9' || i < '0')) {
             throw new IllegalArgumentException("Input numbers for Luhn check should be in a range [0,9]");
         }
     }
