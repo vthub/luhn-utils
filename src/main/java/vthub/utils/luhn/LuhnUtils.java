@@ -48,7 +48,7 @@ public class LuhnUtils
     protected static int luhnChecksum(IntUnaryOperator provider, int length)
     {
         return IntStream.range(0, length)
-                .map(condition(i -> i % 2 == 0 && length % 2 == 0, i -> provider.applyAsInt(i)*2, provider::applyAsInt))
+                .map(condition(i -> i % 2 == 0 && length % 2 == 0, i -> provider.applyAsInt(i)*2, provider))
                 .map(condition(v -> v > 9, v -> v - 9))
                 .sum() % 10;
     }
@@ -80,14 +80,15 @@ public class LuhnUtils
         }
     }
 
-    protected static void validateForLuhnCheck(String number) {
-        IntStream checkStream = Optional.ofNullable(number)
-                .map(String::chars)
-                .orElseThrow(() -> new NullPointerException("Input string for Luhn check cannot be null"));
+    static void validateForLuhnCheck(String number) {
+        if(number == null)
+        {
+            throw new NullPointerException("Input string for Luhn check cannot be null");
+        }
         if(number.length() == 0) {
             throw new IllegalArgumentException("Input string for Luhn check cannot be empty");
         }
-        if(checkStream.anyMatch(i -> i > '9' || i < '0')) {
+        if(number.chars().anyMatch(i -> i > '9' || i < '0')) {
             throw new IllegalArgumentException("Input numbers for Luhn check should be in a range [0,9]");
         }
     }
