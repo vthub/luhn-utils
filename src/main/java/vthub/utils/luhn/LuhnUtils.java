@@ -6,7 +6,6 @@ package vthub.utils.luhn;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import java.util.Optional;
 import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
@@ -22,6 +21,8 @@ public class LuhnUtils
      * Verifies that luhn checksum is valid for a given sequence
      * @param ints sequence of numbers in a range 0-9
      * @return true if checksum valid, false otherwise
+     * @throws NullPointerException if provided array is a null-object
+     * @throws IllegalArgumentException if provided array contains numbers that are less than 0 or greater than 9
      */
     public static boolean isLuhnChecksumValid(int... ints)
     {
@@ -29,9 +30,23 @@ public class LuhnUtils
     }
 
     /**
+     * Verifies that luhn checksum is valid for a given sequence
+     * @param number string that contains only digits. String will be validated prior to processing
+     * @return true if checksum valid, false otherwise
+     * @throws NullPointerException if provided string is a null-object
+     * @throws IllegalArgumentException if provided string contains symbols other than digits
+     */
+    public static boolean isLuhnChecksumValid(String number)
+    {
+        return luhnChecksum(number) == 0;
+    }
+
+    /**
      * Calculates the Luhn checksum of the provided sequence
      * @param ints sequence of numbers in a range 0-9
      * @return Luhn checksum
+     * @throws NullPointerException if provided array is a null-object
+     * @throws IllegalArgumentException if provided array contains numbers that are less than 0 or greater than 9
      */
     public static int luhnChecksum(int... ints)
     {
@@ -39,6 +54,13 @@ public class LuhnUtils
         return luhnChecksum(i -> ints[i], ints.length);
     }
 
+    /**
+     * Calculated the Luhn checksum for the provided string.
+     * @param number string that contains only digits. String will be validated prior to processing
+     * @return Luhn checksum
+     * @throws NullPointerException if provided string is a null-object
+     * @throws IllegalArgumentException if provided string contains symbols other than digits
+     */
     public static int luhnChecksum(String number)
     {
         validateForLuhnCheck(number);
@@ -48,7 +70,7 @@ public class LuhnUtils
     protected static int luhnChecksum(IntUnaryOperator provider, int length)
     {
         return IntStream.range(0, length)
-                .map(condition(i -> i % 2 == 0 && length % 2 == 0, i -> provider.applyAsInt(i)*2, provider))
+                .map(condition(i -> i % 2 == length % 2, i -> provider.applyAsInt(i)*2, provider))
                 .map(condition(v -> v > 9, v -> v - 9))
                 .sum() % 10;
     }

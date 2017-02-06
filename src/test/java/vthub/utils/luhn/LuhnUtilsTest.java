@@ -2,44 +2,48 @@ package vthub.utils.luhn;
 
 import org.junit.Test;
 
-import java.util.Optional;
-
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static vthub.utils.luhn.LuhnUtils.*;
+import static vthub.utils.luhn.TestUtils.stringToInts;
 
 public class LuhnUtilsTest
 {
 
+    private static final String VALID_LUHN = "4534987582177718";
+    private static final String INVALID_LUHN = "6706386224805935";
+
     @Test
     public void testIsLuhnChecksumValid() throws Exception
     {
-        assertThat(isLuhnChecksumValid(stringToInts("4534987582177718")), is(true));
-        assertThat(isLuhnChecksumValid(stringToInts("6011481272108982")), is(true));
-        assertThat(isLuhnChecksumValid(stringToInts("6706386224805934")), is(true));
-        assertThat(isLuhnChecksumValid(stringToInts("6706386224805935")), is(false));
+        assertThat(isLuhnChecksumValid(stringToInts(VALID_LUHN)), is(true));
+        assertThat(isLuhnChecksumValid(stringToInts(INVALID_LUHN)), is(false));
+
+        assertThat(isLuhnChecksumValid(VALID_LUHN), is(true));
+        assertThat(isLuhnChecksumValid(INVALID_LUHN), is(false));
     }
 
     @Test
-    public void testLuhnChecksum_IntArrayInput() throws Exception
+    public void testLuhnChecksum() throws Exception
     {
-        assertThat(luhnChecksum(stringToInts("4534987582177718")), is(0));
-        assertThat(luhnChecksum(stringToInts("6011481272108982")), is(0));
-        assertThat(luhnChecksum(stringToInts("6706386224805934")), is(0));
-    }
+        assertThat(luhnChecksum(stringToInts(VALID_LUHN)), is(0));
+        assertThat(luhnChecksum(stringToInts(INVALID_LUHN)), is(not(0)));
 
-    @Test
-    public void testLuhnChecksum_StringInput() throws Exception
-    {
-        assertThat(luhnChecksum("4534987582177718"), is(0));
-        assertThat(luhnChecksum("6011481272108982"), is(0));
-        assertThat(luhnChecksum("6706386224805934"), is(0));
+        assertThat(luhnChecksum(VALID_LUHN), is(0));
+        assertThat(luhnChecksum(INVALID_LUHN), is(not(0)));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testLuhnChecksum_InvalidInput() throws Exception
+    public void testLuhnChecksum_InvalidInput_10() throws Exception
     {
         luhnChecksum(0, 1, 2, 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLuhnChecksum_InvalidInput_InvalidSymbol() throws Exception
+    {
+        luhnChecksum("6777-99");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -49,8 +53,13 @@ public class LuhnUtilsTest
     }
 
     @Test(expected = NullPointerException.class)
-    public void testLuhnChecksum_NullInput() throws Exception {
+    public void testLuhnChecksum_IntArray_NullInput() throws Exception {
         luhnChecksum((int[])null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testLuhnChecksum_String_NullInput() throws Exception {
+        luhnChecksum((String)null);
     }
 
     @Test
@@ -61,11 +70,4 @@ public class LuhnUtilsTest
         assertThat(luhnCheckDigit(stringToInts("670638622480593")), is(4));
     }
 
-    int[] stringToInts(String s)
-    {
-        return Optional.ofNullable(s).orElse("")
-                .chars()
-                .map(c -> Integer.valueOf(Character.toString((char) c)))
-                .toArray();
-    }
 }
