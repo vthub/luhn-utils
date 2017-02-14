@@ -53,6 +53,13 @@ public class LuhnUtilsExtendedTest
                 .forEach(e -> assertThat(e.getKey() + " is expected to have " + e.getValue() + " luhn check digit", luhnCheckDigit(stringToInts(e.getKey())), is(e.getValue())));
     }
 
+    @Test
+    public void testLuhnCheckDigit_String_Extended() throws Exception {
+        Files.lines(Paths.get(ClassLoader.getSystemResource("valid.txt").toURI()))
+                .map(s -> new AbstractMap.SimpleEntry<>(s.substring(0, s.length() - 1), s.charAt(s.length() - 1) - '0'))
+                .forEach(e -> assertThat(e.getKey() + " is expected to have " + e.getValue() + " luhn check digit", luhnCheckDigit(e.getKey()), is(e.getValue())));
+    }
+
     private void forEachInFile(String file, Consumer<String> consumer) throws Exception{
         Files.lines(Paths.get(ClassLoader.getSystemResource(file).toURI())).filter(StringUtils::isNotEmpty).forEach(consumer);
     }

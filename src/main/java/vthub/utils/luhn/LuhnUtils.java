@@ -42,6 +42,28 @@ public class LuhnUtils
     }
 
     /**
+     * Calculates the check digit that will make Luhn checksum of the result sequence zero
+     * @param ints sequence the check digit to be calculated for
+     * @return check digit
+     */
+    public static int luhnCheckDigit(int... ints)
+    {
+        int checksum = luhnChecksum(ArrayUtils.add(ints, 0));
+        return checksum == 0 ? checksum : 10 - checksum;
+    }
+
+    /**
+     * Calculates the check digit that will make Luhn checksum of the result sequence zero
+     * @param number string that contains only digits. String will be validated prior to processing
+     * @return check digit
+     */
+    public static int luhnCheckDigit(String number)
+    {
+        int checksum = luhnChecksum(number + "0");
+        return checksum == 0 ? checksum : 10 - checksum;
+    }
+
+    /**
      * Calculates the Luhn checksum of the provided sequence
      * @param ints sequence of numbers in a range 0-9
      * @return Luhn checksum
@@ -113,17 +135,6 @@ public class LuhnUtils
         if(number.chars().anyMatch(i -> i > '9' || i < '0')) {
             throw new IllegalArgumentException("Input numbers for Luhn check should be in a range [0,9]");
         }
-    }
-
-    /**
-     * Calculates the check digit that will make Luhn checksum of the result sequence zero
-     * @param ints sequence the check digit to be calculated for
-     * @return check digit
-     */
-    public static int luhnCheckDigit(int... ints)
-    {
-        int checksum = luhnChecksum(ArrayUtils.add(ints, 0));
-        return checksum == 0 ? checksum : 10 - checksum;
     }
 
 }
